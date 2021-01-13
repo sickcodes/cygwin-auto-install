@@ -72,10 +72,13 @@ set PATH=%ROOTDIR%/bin;%CD%;%PATH%
 %ROOTDIR%/bin/bash.exe -c 'wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg -O /bin/apt-cyg'
 %ROOTDIR%/bin/bash.exe -c 'chmod a+x /bin/apt-cyg'
 %ROOTDIR%/bin/bash.exe -c '/bin/apt-cyg --version'
-%ROOTDIR%/bin/bash.exe -c 'mkpasswd'
-%ROOTDIR%/bin/bash.exe -c 'ssh-host-config --port %SSH_PORT% --yes'
-%ROOTDIR%/bin/bash.exe -c '[ "${RUN_SSHD}" ] && net start sshd'
-netsh advfirewall firewall add rule name="Open Port %SSH_PORT%" dir=in action=allow protocol=TCP localport=%SSH_PORT% remoteip=%AUTHORIZED_IPS%
+
+IF "%RUN_SSHD%"=="true" (%ROOTDIR%/bin/bash.exe -c 'mkpasswd'
+    %ROOTDIR%/bin/bash.exe -c 'ssh-host-config --port %SSH_PORT% --yes'
+    netsh advfirewall firewall add rule name="Open Port %SSH_PORT%" dir=in action=allow protocol=TCP localport=%SSH_PORT% remoteip=%AUTHORIZED_IPS%
+    %ROOTDIR%/bin/bash.exe -c '[ "${RUN_SSHD}" ] && cygrunsrv.exe -S cygsshd'
+)
+
 ENDLOCAL
  
 PAUSE
